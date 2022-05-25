@@ -1,0 +1,19 @@
+@isTest
+public with sharing class WarehouseSyncScheduleTest{
+    // implement scheduled code here
+    //public static String CRON_EXP = '00 00 00 * * ? *';
+    @isTest
+    static void testScheduledJob(){
+        String CRON_EXP = '00 00 00 * * ? *';
+        Test.startTest();
+         Test.setMock(HttpCalloutMock.class, new WarehouseCalloutServiceMock());
+        // Schedule the test job
+         String jobId = System.schedule('ScheduledApexTest',
+         CRON_EXP, new WarehouseSyncSchedule());
+         Test.stopTest();
+         CronTrigger c = [SELECT id FROM CronTrigger where NextFireTime = today limit 1];
+         System.assertEquals('WAITING', c.Id, 'JobId does not match');
+         
+    }
+    
+}
